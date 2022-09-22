@@ -1,0 +1,13 @@
+## Author
+
+- **Name:** Heqi Yin
+- **Email:** heqiyin2@illinois.edu
+
+## Purpose
+The main purpose is to analyze best lifts in three ways(Squat, Bench, Deadlift) for different age classes in powerlifting. And the application provides data visualization by scatter plots. When users select different box, they are able to change divisions, age classes best results of different athletes. It also provides converting kilograms to pounds function.   
+
+## Data
+The data comes from International Powerlifting Federation(IPF), which is an open dataset. The dataset includes different athletes in powerlifting around the world. In the application, it chose part of data from the whole dataset, which contains their names, sex, ages, age classes, divisions, event, equipment, their body weight information and their best contest results, total results, etc.
+
+## References
+Data Source: https://openpowerlifting.gitlab.io/opl-csv/bulk-csv.html
