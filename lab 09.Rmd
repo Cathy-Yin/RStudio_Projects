@@ -1,0 +1,109 @@
+---
+title: "Lab 09"
+author : "Heqi Yin"
+output: html_document
+---
+
+## Exercise 1
+
+```{r, message = FALSE}
+library(tidyverse)
+```
+
+
+## Exercise 2
+
+```{r}
+nfl_2020 <- nflreadr::load_schedules(seasons = 2020)
+```
+
+```{r, message=FALSE}
+ggplot(nfl_2020, aes(x = result)) +
+  geom_histogram() +
+  labs(title = "2020 NFL Score Differentials",
+       subtitle = "Home - Away",
+       caption = "Data Source: nflreadr Package") +
+  xlab("Score Difference") +
+  ylab("Count") +
+  theme_bw()
+```
+
+## Exercise 3
+
+```{r,message=FALSE}
+gpa <- read_csv("https://raw.githubusercontent.com/wadefagen/datasets/master/gpa/uiuc-gpa-dataset.csv")
+```
+
+```{r, fig.height = 8}
+gpa %>%
+  filter(Subject == "STAT") %>%
+  filter(Number < 500) %>%
+  group_by(Number) %>%
+  summarise(num_a = sum(`A+` + A +`A-`),
+            total = sum(`A+` + A +`A-` + `B+` + B + `B-` + `C+` + C + `C-` + `D+` + `D` + `D-` + `F` + W),
+            perc_a = num_a / total) %>%
+  select(Number, num_a, total, perc_a) %>%
+  ggplot(aes(x = as.factor(Number), y = perc_a)) +
+  geom_bar(stat = "identity", fill = "dodgerblue") +
+  labs(title = "Percentage of Grade A",
+       subtitle = "Statistics Courses at UIUC",
+       caption = "Data Source: github.com/wadefagen/datasets") +
+  xlab("STAT Course") +
+  ylab("Percent A") +
+  coord_flip() +
+  theme_bw()
+```
+
+## Exercise 4
+
+```{r,message=FALSE}
+ipf <- read_csv("data/openipf-2021.csv")
+```
+
+```{r}
+ipf %>% 
+  filter(!is.na(BodyweightKg) & !is.na(TotalKg) & !is.na(WeightClassKg)) %>%
+  filter(Event == "SBD") %>%
+  filter(Equipment == "Raw") %>%
+  filter(Division == "Open") %>%
+  ggplot(aes(x = BodyweightKg, y = TotalKg, color = WeightClassKg)) +
+  geom_point() +
+  labs(title = "Total versus BodyWeight",
+       subtitle = "IPF Powerlifting",
+       caption = "Data Source: openpowerlifting.org") +
+    xlab("BodyWeight (kg)") +
+    ylab("Total (kg)")
+```
+
+## Exercise 5
+
+```{r,message=FALSE}
+covid <- read_csv("data/illinois-shield-covid-data-20211104.csv", 
+    col_types = cols(`_time` = col_datetime(format = "%a %b %d %H:%M:%S %Y")))
+```
+
+```{r, fig.width = 10, fig.height = 4}
+covid %>%
+  rename(date = `_time`) %>%
+  select(date, ends_with("Cases")) %>%
+  mutate(otherCases = totalNewCases - undergradCases - gradCases - facStaffCases) %>%
+  select(-totalNewCases) %>%
+  pivot_longer(cols = ends_with("Cases"),
+               names_to = "population",
+               values_to = "cases") %>%
+  mutate(population = recode(population,
+                             facStaffCases = "Faculty and Staff",
+                             undergradCases = "Undergraduate",
+                             gradCases = "Graduate",
+                             otherCases = "Others")) %>%
+  filter(!is.na(cases)) %>%
+  ggplot(aes(x = date, y = cases, fill = population)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Covid Cases",
+       subtitle = "UIUC",
+       caption = "Data Source:  covid19.illinois.edu") +
+    xlab("date") +
+    ylab("Cases") +
+  theme_bw()
+```
+
