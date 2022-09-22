@@ -1,0 +1,64 @@
+---
+title: "Lab 10"
+author: "Heqi Yin"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Exercise 1
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+mlb_pitches_2021 = as_tibble(readRDS(url("https://stat385.org/data/mlb_pitches_2021.rds")))
+```
+
+## Exercise 2
+
+```{r}
+mlb_pitches_2021 %>%
+  filter(pitch_type != "") %>%
+  ggplot(aes(x = fct_infreq(pitch_type))) +
+  geom_bar()
+```
+
+## Exercise 3
+```{r}
+mlb_pitches_2021 %>%
+  filter(pitch_type != "") %>%
+  filter(name == "Carlos Rodon") %>%
+  ggplot(aes(x = release_speed, y = release_spin_rate, color = pitch_type, shape = pitch_type)) +
+  geom_point()
+```
+
+## Exercise 4
+```{r}
+mlb_pitches_2021 %>%
+  filter(pitch_type != "") %>%
+  filter(pitch_type == "FF") %>%
+  group_by(game_date) %>%
+  summarise(spin_per_velo = mean(release_spin_rate / release_speed, na.rm = TRUE), n = n()) %>%
+  filter(game_date < "2021-10-05") %>%
+  mutate(post_ban = game_date >= "2021-06-21") %>%
+  ggplot(aes(x = game_date, y = spin_per_velo)) +
+  geom_point(aes(color = post_ban, shape = post_ban)) +
+  geom_smooth()
+```
+
+## Exercise 5
+
+```{r}
+mlb_pitches_2021 %>%
+  filter(pitch_type != "") %>%
+  filter(name == "Gerrit Cole") %>%
+  mutate(post_ban = game_date >= "2021-06-21") %>%
+  na.omit() %>%
+  ggplot(aes(x = game_date, y = release_spin_rate / release_speed)) +
+  geom_point(aes(color = post_ban)) +
+  geom_smooth() +
+  facet_wrap(~pitch_type, scales = "free_y")
+```
+
